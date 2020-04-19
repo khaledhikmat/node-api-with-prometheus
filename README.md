@@ -93,7 +93,7 @@ where:
 - Start the Node loader using command line arguments: 
 
 ```
-node loader.js localhost 8800 10 /ping /hello/greeting /hello/buddy /configuration/setting
+node loader.js http localhost 8800 10 /ping /hello/greeting /hello/buddy /configuration/setting
 ```
 
 where:

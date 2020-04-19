@@ -1,9 +1,10 @@
-const http = require('http');
-
 // Read arguments - we don't really care about nodeProc and nodeModule
-const [nodeProc, nodeModule, host, portNumber, intervalNumber, ...paths] = process.argv;
+const [nodeProc, nodeModule, protocol, host, portNumber, intervalNumber, ...paths] = process.argv;
 
 // Make sure we have defaults
+if (!protocol) {
+    protocol = 'http';
+} 
 if (!host) {
     host = 'localhost';
 } 
@@ -14,6 +15,7 @@ if (!intervalNumber) {
     intervalNumber = '10';
 }
 
+const http = require(protocol);
 const port = parseInt(portNumber);
 const interval = parseInt(intervalNumber);
 
