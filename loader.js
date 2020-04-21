@@ -25,6 +25,8 @@ console.log('Interval: ' + interval);
 console.log('Paths: ', paths);
 console.log('Paths length: ', paths.length);
 
+// for POST paths, probably pass a file
+
 const getRandomInteger = (max) => {
     return Math.floor(Math.random() * Math.floor(max));
 }
@@ -37,7 +39,7 @@ const getResponse = (path) => {
         method: 'GET'
     }
 
-    console.log(`getResponse: ${port}:${path}`);
+    //console.log(`getResponse: ${port}:${path}`);
     var req = http.request(options, res => {
         console.log(`Status code for ${path} is: ${res.statusCode}`);
     });
