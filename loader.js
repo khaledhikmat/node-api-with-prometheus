@@ -39,7 +39,7 @@ const getResponse = (path) => {
 
     console.log(`getResponse: ${port}:${path}`);
     var req = http.request(options, res => {
-        console.log(`Status code: ${res.statusCode}`);
+        console.log(`Status code for ${path} is: ${res.statusCode}`);
     });
 
     req.end();
