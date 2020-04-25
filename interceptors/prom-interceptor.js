@@ -61,6 +61,10 @@ const httpSummaryDuration = new client.Summary ({
     registers: [appRegistry]
 });
 
+const getRandomInteger = (max) => {
+    return Math.floor(Math.random() * Math.floor(max));
+}
+
 function intercept (controller, req, res, next) {
     // console.log({
     //     controller: controller,
@@ -73,8 +77,8 @@ function intercept (controller, req, res, next) {
     // });
 
     httpRequestsTotalCounter.labels(controller, req.url, req.method).inc();
-    httpRequestBytesCounter.labels(controller, req.url, req.method).inc(Math.random() * 100);
-    httpRequestsGauge.labels(controller, req.url, req.method).inc();
+    httpRequestBytesCounter.labels(controller, req.url, req.method).inc(getRandomInteger(100));
+    httpRequestsGauge.labels(controller, req.url, req.method).inc(getRandomInteger(10));
     let end = httpRequestDuration.labels(controller, req.url, req.method).startTimer();
     let end2 = httpSummaryDuration.labels(controller, req.url, req.method).startTimer();
 
@@ -89,7 +93,7 @@ function intercept (controller, req, res, next) {
     }
 
     memUsageGauge.set(process.memoryUsage().heapUsed);
-    httpRequestsGauge.labels(controller, req.url, req.method).dec();
+    httpRequestsGauge.labels(controller, req.url, req.method).dec(getRandomInteger(3));
     httpLastRequestGauge.labels(controller, req.url, req.method).setToCurrentTime();
     end();
     end2();
