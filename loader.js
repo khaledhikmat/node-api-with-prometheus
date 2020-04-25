@@ -40,11 +40,36 @@ const getResponse = (path) => {
     }
 
     //console.log(`getResponse: ${port}:${path}`);
-    var req = http.request(options, res => {
-        console.log(`Status code for ${path} is: ${res.statusCode}`);
-    });
+    let request;
+    try {
+        request = http.request(options, response => {
+            console.log(`Status code for ${path} is: ${response.statusCode}`);
+            let data = [];
 
-    req.end();
+            response.on('data', (fragment) => {
+                data.push(fragment);
+            });
+
+            response.on('end', () => {
+                let body = Buffer.concat(data);
+            });
+
+            response.on('error', (error) => {
+                console.log(`Response error took place ${error}`);
+            });
+        });
+
+        if (request) {
+            request.on('error', (error) => {
+                console.log(`Request error took place ${error}`);
+            })
+        }
+    } catch (e) {
+        console.log(`Error took place ${e}`);
+    } finally {
+        if (request) request.end();
+    }
+
     setTimeout(getResponse, getRandomInteger(interval) * 1000, path);
 } 
 

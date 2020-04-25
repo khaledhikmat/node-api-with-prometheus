@@ -54,6 +54,13 @@ const httpRequestDuration = new client.Histogram ({
     registers: [appRegistry]
 });
 
+const httpSummaryDuration = new client.Summary ({
+    name: "demo_http_summary_duration",
+    help: "Demo HTTP Summary Duration",
+    labelNames: ["controller", "path", "method"],
+    registers: [appRegistry]
+});
+
 function intercept (controller, req, res, next) {
     // console.log({
     //     controller: controller,
@@ -69,6 +76,7 @@ function intercept (controller, req, res, next) {
     httpRequestBytesCounter.labels(controller, req.url, req.method).inc(Math.random() * 100);
     httpRequestsGauge.labels(controller, req.url, req.method).inc();
     let end = httpRequestDuration.labels(controller, req.url, req.method).startTimer();
+    let end2 = httpSummaryDuration.labels(controller, req.url, req.method).startTimer();
 
     try {
         if (Math.random() < 0.2) {
@@ -84,6 +92,7 @@ function intercept (controller, req, res, next) {
     httpRequestsGauge.labels(controller, req.url, req.method).dec();
     httpLastRequestGauge.labels(controller, req.url, req.method).setToCurrentTime();
     end();
+    end2();
 }
 
 module.exports.registry = appRegistry;

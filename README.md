@@ -107,14 +107,6 @@ where:
 Template variables page 108
 PromQL page 209
 
-- Counters: the total is of little use on its own!! What we really want to know is how quickly the counter is increasing over time. This is usually done using the rate function, though the increase and irate functions also operate on counter values.
-
-*Average bytes per second per path:*
-
-```
-avg without(job, instance, deployment, method) (rate(demo_http_bytes[5m]))
-```
-
 - Gauges: are a snapshot of state! Usually when aggregating them we want to take a sum, average, minimum, or maximum.
 
 *Sum of requests per path:*
@@ -122,5 +114,97 @@ avg without(job, instance, deployment, method) (rate(demo_http_bytes[5m]))
 ```
 sum without(job, instance, deployment, method) (demo_http_pending_requests)
 ```
+
+- Counters: the total is of little use on its own!! What we really want to know is how quickly the counter is increasing over time. This is usually done using the rate function, though the increase and irate functions also operate on counter values.
+
+*Counter value over time (useless):*
+
+```
+demo_http_bytes
+```
+
+The Prometheus output is:
+
+```
+demo_http_bytes{controller="configuration",instance="localhost:8800",job="demo",method="GET",path="/setting"}	1309.23874047042
+demo_http_bytes{controller="ping",instance="localhost:8800",job="demo",method="GET",path="/"}	1334.60345663461
+demo_http_bytes{controller="hello",instance="localhost:8800",job="demo",method="GET",path="/greeting"}	1367.4378080477009
+demo_http_bytes{controller="hello",instance="localhost:8800",job="demo",method="GET",path="/buddy"}	1683.5865578808355
+```
+
+*Counter rate increate over time:*
+
+But if we take a `rate`, the output becomes bytes per second for every controller and path:
+
+```
+rate(demo_http_bytes[5m])
+```
+
+The Prometheus output becomes:
+
+```
+{controller="configuration",instance="localhost:8800",job="demo",method="GET",path="/setting"}	1.8569346761541996
+{controller="ping",instance="localhost:8800",job="demo",method="GET",path="/"}	3.2235872491453352
+{controller="hello",instance="localhost:8800",job="demo",method="GET",path="/greeting"}	2.2546083310317186
+{controller="hello",instance="localhost:8800",job="demo",method="GET",path="/buddy"}	3.1404675343925965
+```
+
+*Aggregated bytes per second:*
+
+The output of the rate function is actually a gauge. So we can now aggrate in a similar way to what we have done for gauges.
+
+- The sum of bytes per second:  
+
+```
+sum (rate(demo_http_bytes[5m]))
+```
+
+The Prometheus output becomes:
+
+```
+{}	20.56068613987261
+```
+
+- To make it more useful, let us do it again but this time remove the un-necessary labels to force Prometheus to produce our labels:  
+
+```
+sum without(job, instance, deployment, method) (rate(demo_http_bytes[5m]))
+```
+
+The Prometheus output is: 
+
+```
+{controller="hello",path="/buddy"}	2.0358140904354096
+{controller="configuration",path="/setting"}	2.8473428183921543
+{controller="ping",path="/"}	2.917824151778038
+{controller="hello",path="/greeting"}	1.9187000598385104
+```
+
+- Now let us find the average bytes per second for the `hello` controller and `buddy` path:
+
+
+```
+avg without(job, instance, deployment, method) (rate(demo_http_bytes{controller="hello", path="/buddy"}[5m]))
+```
+
+The Prometheus output is: 
+
+```
+{controller="hello",path="/buddy"}	4.704310204073809
+```
+
+OR 
+
+```
+avg (rate(demo_http_bytes{controller="hello", path="/buddy"}[5m]))
+```
+
+The Prometheus output is: 
+
+```
+{}	4.704310204073809
+```
+
+
 
 
