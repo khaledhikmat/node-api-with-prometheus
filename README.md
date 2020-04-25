@@ -115,14 +115,6 @@ PromQL page 209
 avg without(job, instance, deployment, method) (rate(demo_http_bytes[5m]))
 ```
 
-- Counters: the total is of little use on its own!! What we really want to know is how quickly the counter is increasing over time. This is usually done using the rate function, though the increase and irate functions also operate on counter values.
-
-*Average bytes per second per path:*
-
-```
-avg without(job, instance, deployment, method) (rate(demo_http_bytes[5m]))
-```
-
 - Gauges: are a snapshot of state! Usually when aggregating them we want to take a sum, average, minimum, or maximum.
 
 *Sum of requests per path:*

@@ -40,10 +40,17 @@ const httpLastRequestGauge = new client.Gauge ({
     registers: [appRegistry]
 });
 
-const httpLastRequestDuration = new client.Summary ({
+const memUsageGauge = new client.Gauge ({
+    name: "demo_memory_usage",
+    help: "Demo Memory Usage",
+    registers: [appRegistry]
+});
+
+const httpRequestDuration = new client.Histogram ({
     name: "demo_http_request_duration",
     help: "Demo HTTP Request Duration",
     labelNames: ["controller", "path", "method"],
+    buckets: [0.1, 1, 2, 5, 10, 20],
     registers: [appRegistry]
 });
 
@@ -61,7 +68,7 @@ function intercept (controller, req, res, next) {
     httpRequestsTotalCounter.labels(controller, req.url, req.method).inc();
     httpRequestBytesCounter.labels(controller, req.url, req.method).inc(Math.random() * 100);
     httpRequestsGauge.labels(controller, req.url, req.method).inc();
-    let end = httpLastRequestDuration.labels(controller, req.url, req.method).startTimer();
+    let end = httpRequestDuration.labels(controller, req.url, req.method).startTimer();
 
     try {
         if (Math.random() < 0.2) {
@@ -73,6 +80,7 @@ function intercept (controller, req, res, next) {
         httpRequestExceptionsCounter.labels(controller, req.url, req.method).inc();
     }
 
+    memUsageGauge.set(process.memoryUsage().heapUsed);
     httpRequestsGauge.labels(controller, req.url, req.method).dec();
     httpLastRequestGauge.labels(controller, req.url, req.method).setToCurrentTime();
     end();
