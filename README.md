@@ -69,11 +69,11 @@ where 192.168.86.31 is the Linux server IP address
 - In order to curl the Node API running in Mac:
 
 ```
-curl 192.168.86.27:8800/hello
-curl 192.168.86.27:8800/metrics
+curl 192.168.86.33:8800/hello
+curl 192.168.86.33:8800/metrics
 ```
 
-where 192.168.86.27 is the Mac address
+where 192.168.86.33 is the Mac address
 
 ## Local Node API
 
